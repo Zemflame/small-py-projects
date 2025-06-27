@@ -2,6 +2,7 @@
 # just know i didnt use chatgpt and this code is way better
 # like 20x better
 import random
+
 ###userspace###
 gameLength = 6
 wordLength = 5
@@ -12,6 +13,7 @@ keyboard = [
     '\n ','A','S','D','F','G','H','J','K','L',
     '\n   ','Z','X','C','V','B','N','M']
 ###############
+
 turn = 0
 message = 'made by @zemflame'
 imp = ''
