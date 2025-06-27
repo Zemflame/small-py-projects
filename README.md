@@ -1,4 +1,4 @@
-to play, copy all files to a directory and run either **10wordle_reformat.py** or **11wordle_rewrite.py**
+to play, copy all files to a directory and run either **10wordle_reformat.py** _or_ **11wordle_rewrite.py**
 
 1-9wordle_*.py are old versions of the program.
 
