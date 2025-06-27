@@ -1,7 +1,8 @@
+import random
 gameLength = 6
 wordLength = 5
 turn = 0
-message = ''
+message = 'type a word'
 imp = ''
 impHistory = []
 greyLetters = set()
@@ -12,10 +13,12 @@ keyboard = [
     '\n','Q','W','E','R','T','Y','U','I','O','P',
     '\n ','A','S','D','F','G','H','J','K','L',
     '\n   ','Z','X','C','V','B','N','M']
-
+keyboardWidth = max( (len((''.join(keyboard[1:])).split('\n')[0])*2),(len((''.join(keyboard[2:])).split('\n')[0])*2),(len((''.join(keyboard[3:])).split('\n')[0])*2),)-1
 marking = []
 for m in range(gameLength):
     marking.append([0]*wordLength)
+boardOffset = int((abs((wordLength*3)-keyboardWidth)+(keyboardWidth-(wordLength*3)))/4)
+keyboardOffset = int((abs((wordLength*3)-keyboardWidth)+((wordLength*3)-keyboardWidth))/4)
 
 
 def evaluate(index):
@@ -29,9 +32,6 @@ def evaluate(index):
         return 0
 
 def applyKBV(i,index):
-    global yellowLetters
-    global greenLetters
-    global greyLetters
     if i==1:
         yellowLetters.add(imp[index])
     if i==2:
@@ -39,12 +39,11 @@ def applyKBV(i,index):
     if i==0:
         greyLetters.add(imp[index])
 
+def printEmpty(message):
+    print(' '*boardOffset,'[ ]'*wordLength,' '*(boardOffset+2),message,sep='')
 
-def printEmpty(spacing,message):
-    print(' '*spacing,'[ ]'*wordLength,sep='')
-
-def printImpHistory(spacing,message,index):
-    print(' '*spacing,end='')
+def printImpHistory(message,index):
+    print(' '*boardOffset,end='')
     for m in range(wordLength):
         if marking[index][m]==1:
             print('\033[93m','(',impHistory[index][m],')','\033[0m',sep='',end='')
@@ -52,49 +51,43 @@ def printImpHistory(spacing,message,index):
             print('\033[92m','{',impHistory[index][m],'}','\033[0m',sep='',end='')
         else:
             print('[',impHistory[index][m],']',sep='',end='')
-    print(message)
+    print(' '*(boardOffset+1),message)
     
-def printKeyboard(spacing):
+def printKeyboard():
     for x in keyboard:
-        if x[0:1]=="\n": print('\n',' '*(spacing),x[1:],sep='',end='')
+        if x[0:1]=="\n": print('\n',' '*(keyboardOffset),x[1:],sep='',end='')
         elif x in greenLetters: print('\033[92m',x,'\033[0m',sep='',end=' ')
         elif x in yellowLetters: print('\033[93m',x,'\033[0m',sep='',end=' ')
         elif x in greyLetters: print('\033[90m',x,'\033[0m',sep='',end=' ')
         else: print(x,end=' ')
     print()
 
-
 def printBoard(message):
-    print('\n'*10)
+    print('\n'*20)
 
     for x in range(len(impHistory)):
-        printImpHistory(0,message,x)
+        printImpHistory(message,x)
     x=0
 
     for x in range(gameLength - len(impHistory)):
-        printEmpty(0,message)
+        printEmpty(message)
 
-    printKeyboard(0)
-    print('[debug]', turn, impHistory, len(impHistory),marking,sep='\n')
-
-
+    printKeyboard()
 
 def getInput():
-    global imp
-    imp = input()
-    imp = imp.lower().strip()
+    imp = input(' >')
+    imp = imp.upper().strip()
     if imp.isalpha():
         if len(imp) == wordLength:
             return(imp)
         else:
             message = 'wrong length'
             printBoard(message)
-            getInput()
+            return getInput()
     else:
-        message = 'not alpha'
+        message = 'invalid characters'
         printBoard(message)
-        getInput()
-
+        return getInput()
 
 def mark():
     a = 0
@@ -134,12 +127,26 @@ def mark():
         jint.clear()
     return(submit)
 
-      
+
+if wordLength == 5:
+    with open("potentialAnswers", "rt") as s:
+        content = s.readlines()
+        correctWord = list(content[random.randint(0,2314)].upper())[0:5]
+else:
+    printBoard('enter the answer')
+    correctWord = list(input(' >').upper().strip())
+    for _ in range(wordLength-len(correctWord)):
+        correctWord.append(correctWord[-1])
+
+
 printBoard(message)
-while len(impHistory) < gameLength:
-
-    impHistory.append(getInput())
-
+while turn < gameLength:
+    imp = getInput()
+    impHistory.append(imp)
     marking = mark()
-
+    if marking[turn] == [2]*wordLength:
+        printBoard('you win')
+        exit()
+    turn=turn+1
     printBoard(message)
+printBoard('you lose, word was:',''.join(correctWord).lower())
