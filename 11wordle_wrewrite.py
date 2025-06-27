@@ -2,10 +2,16 @@
 # just know i didnt use chatgpt and this code is way better
 # like 20x better
 import random
+###userspace###
 gameLength = 6
 wordLength = 5
 wordChecking = True
 customWords = False
+keyboard = [
+    '\n','Q','W','E','R','T','Y','U','I','O','P',
+    '\n ','A','S','D','F','G','H','J','K','L',
+    '\n   ','Z','X','C','V','B','N','M']
+###############
 turn = 0
 message = 'made by @zemflame'
 imp = ''
@@ -13,17 +19,13 @@ impHistory = []
 greyLetters = set()
 yellowLetters = set()
 greenLetters = set()
-correctWord = ['A','B','A','T','E']
-keyboard = [
-    '\n','Q','W','E','R','T','Y','U','I','O','P',
-    '\n ','A','S','D','F','G','H','J','K','L',
-    '\n   ','Z','X','C','V','B','N','M']
+correctWord = []
 keyboardWidth = max( (len((''.join(keyboard[1:])).split('\n')[0])*2),(len((''.join(keyboard[2:])).split('\n')[0])*2),(len((''.join(keyboard[3:])).split('\n')[0])*2),)-1
+boardOffset = int((abs((wordLength*3)-keyboardWidth)+(keyboardWidth-(wordLength*3)))/4)
+keyboardOffset = int((abs((wordLength*3)-keyboardWidth)+((wordLength*3)-keyboardWidth))/4)
 marking = []
 for m in range(gameLength):
     marking.append([0]*wordLength)
-boardOffset = int((abs((wordLength*3)-keyboardWidth)+(keyboardWidth-(wordLength*3)))/4)
-keyboardOffset = int((abs((wordLength*3)-keyboardWidth)+((wordLength*3)-keyboardWidth))/4)
 
 
 def scanList(target):
