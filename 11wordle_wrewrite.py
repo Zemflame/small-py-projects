@@ -1,8 +1,13 @@
+# i cant be bothered with comments 
+# just know i didnt use chatgpt and this code is way better
+# like 20x better
 import random
 gameLength = 6
 wordLength = 5
+wordChecking = True
+customWords = False
 turn = 0
-message = 'type a word'
+message = 'made by @zemflame'
 imp = ''
 impHistory = []
 greyLetters = set()
@@ -20,6 +25,12 @@ for m in range(gameLength):
 boardOffset = int((abs((wordLength*3)-keyboardWidth)+(keyboardWidth-(wordLength*3)))/4)
 keyboardOffset = int((abs((wordLength*3)-keyboardWidth)+((wordLength*3)-keyboardWidth))/4)
 
+
+def scanList(target):
+    for a in content:
+        if a[:5] == target:
+            return(True)
+    return(False)
 
 def evaluate(index):
     if imp[index] == correctWord[index]:
@@ -79,7 +90,15 @@ def getInput():
     imp = imp.upper().strip()
     if imp.isalpha():
         if len(imp) == wordLength:
-            return(imp)
+            if wordChecking == True:
+                if scanList(imp.lower()):
+                    return(imp)
+                else:
+                    message = 'word not found'
+                    printBoard(message)
+                    return getInput()
+            else:
+                return(imp)
         else:
             message = 'wrong length'
             printBoard(message)
@@ -96,13 +115,13 @@ def mark():
     jint=[]
     submit=marking
     for n in range(wordLength):
-        if imp.count(imp[n]):
+        if imp.count(imp[n])<2:
             submit[turn][n] = evaluate(n)
             applyKBV(submit[turn][n],n)
         else:
             for a in range(wordLength):
                 if imp[a] == imp[n]:
-                    jint.append(evaluate(imp[a],a))
+                    jint.append(evaluate(a))
                 else:
                     jint.append(0)
             a = 0
@@ -111,7 +130,7 @@ def mark():
                 if jint[b] == 2:
                     submit[turn][b] = 2
                     applyKBV(2,n)
-                    a = a+1
+                    a=a+1
                 b=b+1
                 if b > (wordLength-1):
                     break
@@ -120,24 +139,31 @@ def mark():
                 if jint[b] == 1:
                     submit[turn][b] = 1
                     applyKBV(1,n)
-                    a = a+1
+                    a=a+1
                 b=b+1
                 if b > (wordLength-1):
                     break
         jint.clear()
     return(submit)
 
-
-if wordLength == 5:
-    with open("potentialAnswers", "rt") as s:
-        content = s.readlines()
-        correctWord = list(content[random.randint(0,2314)].upper())[0:5]
-else:
-    printBoard('enter the answer')
+if customWords == True:
+    printBoard('enter custom answer')
     correctWord = list(input(' >').upper().strip())
     for _ in range(wordLength-len(correctWord)):
         correctWord.append(correctWord[-1])
+else:
+    if wordLength == 5:
+        with open("potentialAnswers", "rt") as s:
+            content = s.readlines()
+            correctWord = list(content[random.randint(0,2314)].upper())[0:5]
+    else:
+        printBoard('autoword is only for 5 letter words. enter custom answer')
+        correctWord = list(input(' >').upper().strip())
+        for _ in range(wordLength-len(correctWord)):
+            correctWord.append(correctWord[-1])
 
+with open ("allowedWords", "rt") as s:
+    content = s.readlines()
 
 printBoard(message)
 while turn < gameLength:
